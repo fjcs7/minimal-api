@@ -6,7 +6,7 @@ using minimal_api.Dominio.Servicos;
 using MinimalApi.DTOs;
 using MinimalApi.Infraestrutura.Db;
 
-
+#region Builder
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IAdministradorServico, AdministradorServico>();
@@ -23,18 +23,30 @@ options.UseMySql(
 });
 var app = builder.Build();
 
+#endregion
+
+#region Home
+
 app.MapGet("/", () => Results.Json(new Home()));
 
-app.MapPost("/login", ([FromBody] LoginDTO loginDTO, IAdministradorServico administradorServico) => {
+#endregion
+
+#region Administradores
+app.MapPost("/administradores/login", ([FromBody] LoginDTO loginDTO, IAdministradorServico administradorServico) => {
     if (administradorServico.Login(loginDTO) != null)
         return Results.Ok("Login com sucesso");
     else
         return Results.Unauthorized();
 });
+#endregion
 
+#region  Veiculos
+#endregion
 
+#region App
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.Run();
+#endregion
 
