@@ -51,9 +51,11 @@ app.MapPost("/administradores/login", ([FromBody] LoginDTO loginDTO, IAdministra
 #region  Veiculos
 app.MapPost("/veiculos/", ([FromBody] VeiculoDTO veiculoDTO, IVeiculoServico veiculoServico) =>
 {
-
+    var validacao = veiculoDTO.ValidaDTO();
+    if (validacao.Mensagens.Count > 0)
+        return Results.BadRequest(validacao);
+    
     var novoVeiculo = veiculoDTO.toVeiculo();
-
     veiculoServico.Incluir(novoVeiculo);
 
     return Results.Created($"/veiculos/{novoVeiculo.Id}", novoVeiculo);
@@ -83,6 +85,10 @@ app.MapPut("/veiculos/{id}", ([FromRoute] int id, VeiculoDTO veiculoDTO, IVeicul
     var veiculo = veiculoServico.BuscaId(id);
     if (veiculo == null)
         return Results.NotFound();
+
+    var validacao = veiculoDTO.ValidaDTO();
+    if (validacao.Mensagens.Count > 0)
+        return Results.BadRequest(validacao);
 
     veiculo.Nome = veiculoDTO.Nome;
     veiculo.Marca = veiculoDTO.Marca;
