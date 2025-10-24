@@ -1,15 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using minimal_api.Dominio.Interfaces;
-using minimal_api.Dominio.ModelViews;
-using minimal_api.Dominio.Servicos;
-using MinimalApi.DTOs;
+using MinimalApi.Dominio.DTOs;
+using MinimalApi.Dominio.Entidades;
+using MinimalApi.Dominio.Interfaces;
+using MinimalApi.Dominio.ModelViews;
+using MinimalApi.Dominio.Servicos;
 using MinimalApi.Infraestrutura.Db;
 
 #region Builder
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IAdministradorServico, AdministradorServico>();
+builder.Services.AddScoped<IVeiculoServico, VeiculoServico>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -41,6 +43,19 @@ app.MapPost("/administradores/login", ([FromBody] LoginDTO loginDTO, IAdministra
 #endregion
 
 #region  Veiculos
+app.MapPost("/veiculos/", ([FromBody] VeiculoDTO veiculoDTO,  IVeiculoServico veiculoServico) => {
+
+    var novoVeiculo = new Veiculo()
+    {
+        Nome = veiculoDTO.Nome,
+        Marca = veiculoDTO.Marca,
+        Ano = veiculoDTO.Ano,
+    };
+
+    veiculoServico.Incluir(novoVeiculo);
+
+    return Results.Created($"/veiculo/{novoVeiculo.Id}", novoVeiculo);
+});
 #endregion
 
 #region App

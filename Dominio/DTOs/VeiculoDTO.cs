@@ -1,5 +1,5 @@
 namespace MinimalApi.Dominio.DTOs;
-public class VeiculoDTO
+public record VeiculoDTO
 {
     public string Nome { get; set; } = string.Empty;
 
