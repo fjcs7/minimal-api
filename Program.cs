@@ -45,16 +45,17 @@ app.MapPost("/administradores/login", ([FromBody] LoginDTO loginDTO, IAdministra
 #region  Veiculos
 app.MapPost("/veiculos/", ([FromBody] VeiculoDTO veiculoDTO,  IVeiculoServico veiculoServico) => {
 
-    var novoVeiculo = new Veiculo()
-    {
-        Nome = veiculoDTO.Nome,
-        Marca = veiculoDTO.Marca,
-        Ano = veiculoDTO.Ano,
-    };
+    var novoVeiculo = veiculoDTO.toVeiculo();
 
     veiculoServico.Incluir(novoVeiculo);
 
     return Results.Created($"/veiculo/{novoVeiculo.Id}", novoVeiculo);
+});
+app.MapGet("/veiculos/", ([FromQuery] int? pagina,  IVeiculoServico veiculoServico) => {
+
+    var veiculos = veiculoServico.Todos(pagina);
+
+    return Results.Ok(veiculos);
 });
 #endregion
 

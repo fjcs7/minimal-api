@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MinimalApi.Dominio.Interfaces;
 using MinimalApi.Dominio.Entidades;
 using MinimalApi.Infraestrutura.Db;
+using System.Net.Security;
 
 namespace MinimalApi.Dominio.Servicos;
 
@@ -33,9 +34,10 @@ public class VeiculoServico : IVeiculoServico
     public void Incluir(Veiculo veiculo)
     {
         _contexto.Veiculos.Add(veiculo);
+        _contexto.SaveChanges();
     }
 
-    public List<Veiculo> Todos(int pagina = 1, string? nome = null, string? marca = null)
+    public List<Veiculo> Todos(int? pagina = 1, string? nome = null, string? marca = null)
     {
         var query = _contexto.Veiculos.AsQueryable();
 
@@ -49,9 +51,11 @@ public class VeiculoServico : IVeiculoServico
             query = query.Where(v => EF.Functions.Like(v.Marca.ToLower(), $"%{marca.ToLower()}%"));
         }
 
-        int intensPorPagina = 10;
-
-        query = query.Skip((pagina - 1)* intensPorPagina).Take(intensPorPagina);
+        if (pagina != null && pagina != 0)
+        {
+            int intensPorPagina = 10;
+            query = query.Skip(((int)pagina - 1) * intensPorPagina).Take(intensPorPagina);
+        }
 
         return query.ToList();
     }
