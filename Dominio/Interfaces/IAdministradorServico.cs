@@ -1,7 +1,7 @@
 using MinimalApi.Dominio.Entidades;
-using MinimalApi.DTOs;
+using MinimalApi.Dominio.DTOs;
 
-namespace minimal_api.Dominio.Interfaces;
+namespace MinimalApi.Dominio.Interfaces;
 public interface IAdministradorServico
 {
     Administrador? Login(LoginDTO loginDTO);

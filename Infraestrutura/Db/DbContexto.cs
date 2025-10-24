@@ -3,7 +3,7 @@ using MinimalApi.Dominio.Entidades;
 
 namespace MinimalApi.Infraestrutura.Db;
 
-public class DbContexto : Microsoft.EntityFrameworkCore.DbContext
+public class DbContexto : DbContext
 {
     private readonly IConfiguration _configuracaoAppSettings;
     public DbContexto(IConfiguration configuracaoAppSettings)

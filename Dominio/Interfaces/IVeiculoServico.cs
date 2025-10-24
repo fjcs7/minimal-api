@@ -1,7 +1,6 @@
 using MinimalApi.Dominio.Entidades;
-using MinimalApi.DTOs;
 
-namespace minimal_api.Dominio.Interfaces;
+namespace MinimalApi.Dominio.Interfaces;
 public interface IVeiculoServico
 {    
     List<Veiculo> Todos(int pagina = 1, string? nome = null, string? marca = null);

@@ -1,11 +1,9 @@
-using System.Data.Common;
-using Microsoft.EntityFrameworkCore.Metadata;
-using minimal_api.Dominio.Interfaces;
+using MinimalApi.Dominio.DTOs;
 using MinimalApi.Dominio.Entidades;
-using MinimalApi.DTOs;
+using MinimalApi.Dominio.Interfaces;
 using MinimalApi.Infraestrutura.Db;
 
-namespace minimal_api.Dominio.Servicos;
+namespace MinimalApi.Dominio.Servicos;
 
 public class AdministradorServico : IAdministradorServico
 {
