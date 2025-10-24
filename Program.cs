@@ -7,6 +7,12 @@ using MinimalApi.Dominio.ModelViews;
 using MinimalApi.Dominio.Servicos;
 using MinimalApi.Infraestrutura.Db;
 
+#region Auxiliares
+const string ADMINISTRADOR = "Administradores";
+const string HOME = "Home";
+const string VEICULOS = "Veículos";
+#endregion
+
 #region Builder
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +35,7 @@ var app = builder.Build();
 
 #region Home
 
-app.MapGet("/", () => Results.Json(new Home()));
+app.MapGet("/", () => Results.Json(new Home())).WithTags(HOME);
 
 #endregion
 
@@ -39,24 +45,26 @@ app.MapPost("/administradores/login", ([FromBody] LoginDTO loginDTO, IAdministra
         return Results.Ok("Login com sucesso");
     else
         return Results.Unauthorized();
-});
+}).WithTags(ADMINISTRADOR);
 #endregion
 
 #region  Veiculos
-app.MapPost("/veiculos/", ([FromBody] VeiculoDTO veiculoDTO,  IVeiculoServico veiculoServico) => {
+app.MapPost("/veiculos/", ([FromBody] VeiculoDTO veiculoDTO, IVeiculoServico veiculoServico) =>
+{
 
     var novoVeiculo = veiculoDTO.toVeiculo();
 
     veiculoServico.Incluir(novoVeiculo);
 
     return Results.Created($"/veiculo/{novoVeiculo.Id}", novoVeiculo);
-});
+}).WithTags(VEICULOS);
+
 app.MapGet("/veiculos/", ([FromQuery] int? pagina,  IVeiculoServico veiculoServico) => {
 
     var veiculos = veiculoServico.Todos(pagina);
 
     return Results.Ok(veiculos);
-});
+}).WithTags(VEICULOS);
 #endregion
 
 #region App
