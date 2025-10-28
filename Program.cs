@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MinimalApi.Dominio.DTOs;
 using MinimalApi.Dominio.Entidades;
+using MinimalApi.Dominio.Enuns;
 using MinimalApi.Dominio.Interfaces;
 using MinimalApi.Dominio.ModelViews;
 using MinimalApi.Dominio.Servicos;
@@ -40,12 +41,52 @@ app.MapGet("/", () => Results.Json(new Home())).WithTags(HOME);
 #endregion
 
 #region Administradores
-app.MapPost("/administradores/login", ([FromBody] LoginDTO loginDTO, IAdministradorServico administradorServico) => {
+app.MapPost("/administradores/login", ([FromBody] LoginDTO loginDTO, IAdministradorServico administradorServico) =>
+{
     if (administradorServico.Login(loginDTO) != null)
         return Results.Ok("Login com sucesso");
     else
         return Results.Unauthorized();
 }).WithTags(ADMINISTRADOR);
+
+app.MapPost("/administradores/", ([FromBody] AdministradorDTO administradorDTO, IAdministradorServico administradorServico) =>
+{
+    var validacao = administradorDTO.ValidaDTO();
+    if (validacao.Mensagens.Count > 0)
+        return Results.BadRequest(validacao);
+
+    var novoAdministrador = administradorDTO.toAdministrador();
+    administradorServico.Incluir(novoAdministrador);
+
+    var novoAdmin = AdministradorModelView.ToAdministradorModelView(novoAdministrador);
+
+    return Results.Created($"/administradores/{novoAdmin.Id}", novoAdmin);
+}).WithTags(ADMINISTRADOR);
+
+app.MapGet("/administradores/", ([FromQuery] int? pagina, IAdministradorServico administradorServico) =>
+{
+    var adms = new List<AdministradorModelView>();
+    var administradores = administradorServico.Todos(pagina);
+
+    foreach(var adm in administradores)
+    {
+        adms.Add(AdministradorModelView.ToAdministradorModelView(adm));
+    }
+
+    return Results.Ok(adms);
+}).WithTags(ADMINISTRADOR);
+
+app.MapGet("/administradores/{id}", ([FromRoute] int id, IAdministradorServico administradorServico) =>
+{
+
+    var administrador = administradorServico.BuscaId(id);
+
+    if (administrador == null)
+        return Results.NotFound();
+
+    return Results.Ok(AdministradorModelView.ToAdministradorModelView(administrador));
+}).WithTags(ADMINISTRADOR);
+
 #endregion
 
 #region  Veiculos
