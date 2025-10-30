@@ -42,9 +42,15 @@ public class AdministradorServico : IAdministradorServico
 
         return query.ToList();
     }
-    
+
     public Administrador? BuscaId(int id)
     {
         return _contexto.Administradores.Where(v => v.Id == id).FirstOrDefault();
+    }
+    
+    public void Atualizar(Administrador administrador)
+    {
+        _contexto.Administradores.Update(administrador);
+        _contexto.SaveChanges();
     }
 }

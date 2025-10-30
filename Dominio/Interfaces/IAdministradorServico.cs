@@ -10,4 +10,6 @@ public interface IAdministradorServico
     List<Administrador> Todos(int? pagina);
 
     Administrador? BuscaId(int id);
+
+    void Atualizar(Administrador administrador);
 }

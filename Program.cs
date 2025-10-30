@@ -174,9 +174,30 @@ app.MapGet("/administradores/{id}", ([FromRoute] int id, IAdministradorServico a
         return Results.NotFound();
 
     return Results.Ok(AdministradorModelView.ToAdministradorModelView(administrador));
-}) .RequireAuthorization()
-    .RequireAuthorization(new AuthorizeAttribute{Roles = "Adm"})
+}).RequireAuthorization()
+    .RequireAuthorization(new AuthorizeAttribute { Roles = "Adm" })
     .WithTags(ADMINISTRADOR);
+    
+app.MapPut("/administradores/{id}", ([FromRoute] int id, AdministradorDTO administradorDTO, IAdministradorServico administradorServico) =>
+{
+    var administrador = administradorServico.BuscaId(id);
+    if (administrador == null)
+        return Results.NotFound();
+
+    var validacao = administradorDTO.ValidaDTO();
+    if (validacao.Mensagens.Count > 0)
+        return Results.BadRequest(validacao);
+
+    administrador.Email = administradorDTO.Email;
+    administrador.Senha = administradorDTO.Senha;
+    administrador.Perfil = administradorDTO.Perfil.ToString() ?? string.Empty;
+
+    administradorServico.Atualizar(administrador);
+
+    return Results.Ok(administrador);
+}).RequireAuthorization()
+.RequireAuthorization(new AuthorizeAttribute{Roles = "Adm"})
+.WithTags(ADMINISTRADOR);
 
 #endregion
 
