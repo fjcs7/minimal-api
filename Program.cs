@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Security.Cryptography.Xml;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -104,7 +105,8 @@ string GerarJwtToken(Administrador administrador)
     var claims = new List<Claim>()
     {
         new Claim("Email", administrador.Email),
-        new Claim("Perfil", administrador.Perfil)
+        new Claim("Perfil", administrador.Perfil),
+        new Claim(ClaimTypes.Role, administrador.Perfil),
     };
 
     var token = new JwtSecurityToken(
@@ -144,7 +146,9 @@ app.MapPost("/administradores/", ([FromBody] AdministradorDTO administradorDTO, 
     var novoAdmin = AdministradorModelView.ToAdministradorModelView(novoAdministrador);
 
     return Results.Created($"/administradores/{novoAdmin.Id}", novoAdmin);
-}).RequireAuthorization().WithTags(ADMINISTRADOR);
+}) .RequireAuthorization()
+    .RequireAuthorization(new AuthorizeAttribute{Roles = "Adm"})
+    .WithTags(ADMINISTRADOR);
 
 app.MapGet("/administradores/", ([FromQuery] int? pagina, IAdministradorServico administradorServico) =>
 {
@@ -157,7 +161,9 @@ app.MapGet("/administradores/", ([FromQuery] int? pagina, IAdministradorServico 
     }
 
     return Results.Ok(adms);
-}).RequireAuthorization().WithTags(ADMINISTRADOR);
+})  .RequireAuthorization()
+    .RequireAuthorization(new AuthorizeAttribute{Roles = "Adm"})
+    .WithTags(ADMINISTRADOR);
 
 app.MapGet("/administradores/{id}", ([FromRoute] int id, IAdministradorServico administradorServico) =>
 {
@@ -168,7 +174,9 @@ app.MapGet("/administradores/{id}", ([FromRoute] int id, IAdministradorServico a
         return Results.NotFound();
 
     return Results.Ok(AdministradorModelView.ToAdministradorModelView(administrador));
-}).RequireAuthorization().WithTags(ADMINISTRADOR);
+}) .RequireAuthorization()
+    .RequireAuthorization(new AuthorizeAttribute{Roles = "Adm"})
+    .WithTags(ADMINISTRADOR);
 
 #endregion
 
@@ -183,14 +191,18 @@ app.MapPost("/veiculos/", ([FromBody] VeiculoDTO veiculoDTO, IVeiculoServico vei
     veiculoServico.Incluir(novoVeiculo);
 
     return Results.Created($"/veiculos/{novoVeiculo.Id}", novoVeiculo);
-}).RequireAuthorization().WithTags(VEICULOS);
+}).RequireAuthorization()
+.RequireAuthorization(new AuthorizeAttribute{Roles = "Adm, Editor"})
+.WithTags(VEICULOS);
 
 app.MapGet("/veiculos/", ([FromQuery] int? pagina,  IVeiculoServico veiculoServico) => {
 
     var veiculos = veiculoServico.Todos(pagina);
 
     return Results.Ok(veiculos);
-}).RequireAuthorization().WithTags(VEICULOS);
+}).RequireAuthorization()
+.RequireAuthorization(new AuthorizeAttribute{Roles = "Adm, Editor"})
+.WithTags(VEICULOS);
 
 app.MapGet("/veiculos/{id}", ([FromRoute] int id, IVeiculoServico veiculoServico) =>
 {
@@ -201,7 +213,9 @@ app.MapGet("/veiculos/{id}", ([FromRoute] int id, IVeiculoServico veiculoServico
         return Results.NotFound();
 
     return Results.Ok(veiculo);
-}).RequireAuthorization().WithTags(VEICULOS);
+}).RequireAuthorization()
+.RequireAuthorization(new AuthorizeAttribute{Roles = "Adm, Editor"})
+.WithTags(VEICULOS);
 
 app.MapPut("/veiculos/{id}", ([FromRoute] int id, VeiculoDTO veiculoDTO, IVeiculoServico veiculoServico) =>
 {
@@ -221,7 +235,9 @@ app.MapPut("/veiculos/{id}", ([FromRoute] int id, VeiculoDTO veiculoDTO, IVeicul
     veiculoServico.Atualizar(veiculo);
 
     return Results.Ok(veiculo);
-}).RequireAuthorization().WithTags(VEICULOS);
+}).RequireAuthorization()
+.RequireAuthorization(new AuthorizeAttribute{Roles = "Adm"})
+.WithTags(VEICULOS);
 
 app.MapDelete("/veiculos/{id}", ([FromRoute] int id,  IVeiculoServico veiculoServico) => {
 
@@ -232,7 +248,9 @@ app.MapDelete("/veiculos/{id}", ([FromRoute] int id,  IVeiculoServico veiculoSer
     veiculoServico.Apagar(veiculo);
 
     return Results.NoContent();
-}).RequireAuthorization().WithTags(VEICULOS);
+}).RequireAuthorization()
+.RequireAuthorization(new AuthorizeAttribute{Roles = "Adm"})
+.WithTags(VEICULOS);
 
 #endregion
 
