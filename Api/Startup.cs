@@ -7,13 +7,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using MinimalApi;
 using MinimalApi.Dominio.DTOs;
 using MinimalApi.Dominio.Entidades;
 using MinimalApi.Dominio.Interfaces;
 using MinimalApi.Dominio.ModelViews;
 using MinimalApi.Dominio.Servicos;
 using MinimalApi.Infraestrutura.Db;
+
+
+namespace MinimalApi;
 
 public class Startup
 {
@@ -105,7 +107,7 @@ public class Startup
 
         app.UseAuthentication();
         app.UseAuthorization();
-        
+
         app.UseEndpoints(endpoints =>
         {
             #region Home
@@ -296,7 +298,5 @@ public class Startup
             #endregion
         });
     }
-    
-
 
 }

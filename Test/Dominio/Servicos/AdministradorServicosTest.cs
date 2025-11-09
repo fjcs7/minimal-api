@@ -10,7 +10,7 @@ namespace Test.Dominio.Servicos;
 [TestClass]
 public class AdministradorServicosTest
 {
-    private DbContexto context;
+    private DbContexto context = default!;
 
     private void CriarContextoTest()
     {
@@ -82,6 +82,6 @@ public class AdministradorServicosTest
     
     public void Dispose()
     {
-        context = null;
+        context.Dispose();
     }
 }
