@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MinimalApi.Dominio.DTOs;
 using MinimalApi.Dominio.Entidades;
+using MinimalApi.Dominio.ModelViews;
 using MinimalApi.Dominio.Servicos;
 using MinimalApi.Infraestrutura.Db;
 
@@ -47,7 +48,17 @@ public class AdministradorRequestTest
 
 
         //Assert
-        Assert.AreEqual(HttpStatusCode.OK,response.StatusCode);
+        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+
+        var result = await response.Content.ReadAsStringAsync();
+        var admLogado = JsonSerializer.Deserialize<AdministradorLogado>(result, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+
+        Assert.IsNotNull(admLogado?.Email);
+        Assert.IsNotNull(admLogado?.Token);
+        Assert.IsNotNull(admLogado?.Perfil);
 
     }
 
